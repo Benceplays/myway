@@ -1,15 +1,13 @@
-export const API_BASE = "http://192.168.0.107:3000"; // 🔁 a te IP-d
+export const API_BASE = "http://192.168.1.106:3000";
 
 let token: string | null = null;
 
 export function setToken(t: string | null) {
   token = t;
 }
+export type HistoryPeriod = "week" | "month" | "year";
 
-async function req(
-  path: string,
-  options: RequestInit = {}
-) {
+async function req(path: string, options: RequestInit = {}) {
   const headers: any = {
     "Content-Type": "application/json",
     ...(options.headers || {}),
@@ -24,7 +22,14 @@ async function req(
     headers,
   });
 
-  const data = await res.json().catch(() => ({}));
+  const text = await res.text();
+  let data: any = {};
+
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(text);
+  }
 
   if (!res.ok) {
     throw new Error(data?.error || "Request failed");
@@ -35,32 +40,43 @@ async function req(
 
 export const api = {
   // 🔐 AUTH
-  register: (email: string, password: string) =>
-    req("/auth/register", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    }),
-
   login: (email: string, password: string) =>
-    req("/auth/login", {
+  req("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  }),
+  register: (email: string, password: string) =>
+  req("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  }),
+
+  // 📅 TASKS
+  getTodayTasks: () => req("/daily-tasks/today"),
+
+  completeDailyTask: (id: number) =>
+    req(`/daily-tasks/${id}/complete`, { method: "POST" }),
+
+  uncompleteDailyTask: (id: number) =>
+    req(`/daily-tasks/${id}/uncomplete`, { method: "POST" }),
+
+  deleteDailyTask: (id: number) =>
+    req(`/daily-tasks/${id}`, { method: "DELETE" }),
+
+  addDailyTask: (title: string, area: string, points = 1) =>
+    req("/daily-tasks/add", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ title, area, points }),
     }),
 
-  // 📅 DAILY TASKS
-  getTodayTasks: () =>
-    req("/daily-tasks/today"),
+  // 📊 STATS
+  getUserStats: () => req("/user/stats"),
 
-  completeDailyTask: (dailyTaskId: number) =>
-    req(`/daily-tasks/${dailyTaskId}/complete`, {
-      method: "POST",
-    }),
+  getUserHistory: (period: HistoryPeriod) =>
+    req(`/user/stats/history?period=${period}`),
 
-  // 🗺️ LIFE MAP
-  getLifeMap: () =>
-    req("/life-map"),
+  // 🔄 RESET
+  resetUser: () => req("/user/reset", { method: "POST" }),
 
-  // ❤️ HEALTH CHECK (dev)
-  health: () =>
-    req("/health"),
+  getWeeklyHistory: () => req("/user/history/week"),
 };

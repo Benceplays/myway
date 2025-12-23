@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `daily_tasks` (
   `points` int(11) NOT NULL DEFAULT 10,
   `active` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=156 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Tábla adatainak mentése my_way.daily_tasks: ~95 rows (hozzávetőleg)
 DELETE FROM `daily_tasks`;
@@ -126,7 +126,12 @@ INSERT INTO `daily_tasks` (`id`, `area`, `title`, `points`, `active`) VALUES
 	(152, 'me', 'Alakíts ki egy új napi szokást', 20, 1),
 	(153, 'health', 'Sportolj magas intenzitással', 20, 1),
 	(154, 'money', 'Állíts fel pénzügyi célt', 20, 1),
-	(155, 'me', 'Írj le egy hosszú távú célod', 20, 1);
+	(155, 'me', 'Írj le egy hosszú távú célod', 20, 1),
+	(156, 'relationships', 'Teszt', 1, 1),
+	(157, 'health', 'Fogmosás', 1, 1),
+	(158, 'health', 'Teszt', 1, 1),
+	(159, 'money', 'E', 1, 1),
+	(160, 'me', 'A', 1, 1);
 
 -- Struktúra mentése tábla my_way. user_area_points
 CREATE TABLE IF NOT EXISTS `user_area_points` (
@@ -137,11 +142,14 @@ CREATE TABLE IF NOT EXISTS `user_area_points` (
   CONSTRAINT `fk_uap_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tábla adatainak mentése my_way.user_area_points: ~2 rows (hozzávetőleg)
+-- Tábla adatainak mentése my_way.user_area_points: ~5 rows (hozzávetőleg)
 DELETE FROM `user_area_points`;
 INSERT INTO `user_area_points` (`user_id`, `area`, `points`) VALUES
-	(1, 'money', 10),
-	(1, 'me', 10);
+	(1, 'health', 2),
+	(1, 'learning', 30),
+	(1, 'money', 60),
+	(1, 'relationships', 7),
+	(1, 'me', 30);
 
 -- Struktúra mentése tábla my_way. user_daily_tasks
 CREATE TABLE IF NOT EXISTS `user_daily_tasks` (
@@ -151,21 +159,75 @@ CREATE TABLE IF NOT EXISTS `user_daily_tasks` (
   `date` date NOT NULL,
   `completed` tinyint(1) DEFAULT 0,
   `completed_at` datetime DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `points` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_user_task_day` (`user_id`,`daily_task_id`,`date`),
   KEY `fk_udt_task` (`daily_task_id`),
   CONSTRAINT `fk_udt_task` FOREIGN KEY (`daily_task_id`) REFERENCES `daily_tasks` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_udt_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=400 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=432 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tábla adatainak mentése my_way.user_daily_tasks: ~5 rows (hozzávetőleg)
+-- Tábla adatainak mentése my_way.user_daily_tasks: ~31 rows (hozzávetőleg)
 DELETE FROM `user_daily_tasks`;
-INSERT INTO `user_daily_tasks` (`id`, `user_id`, `daily_task_id`, `date`, `completed`, `completed_at`) VALUES
-	(395, 1, 130, '2025-12-20', 0, NULL),
-	(396, 1, 2, '2025-12-20', 0, NULL),
-	(397, 1, 3, '2025-12-20', 0, NULL),
-	(398, 1, 31, '2025-12-20', 0, NULL),
-	(399, 1, 16, '2025-12-20', 0, NULL);
+INSERT INTO `user_daily_tasks` (`id`, `user_id`, `daily_task_id`, `date`, `completed`, `completed_at`, `deleted`, `points`) VALUES
+	(395, 1, 130, '2025-12-20', 0, NULL, 1, 0),
+	(402, 1, 133, '2025-12-20', 0, NULL, 1, 0),
+	(403, 1, 142, '2025-12-20', 0, NULL, 1, 0),
+	(404, 1, 137, '2025-12-20', 0, NULL, 1, 0),
+	(405, 1, 59, '2025-12-20', 0, NULL, 1, 0),
+	(406, 1, 58, '2025-12-20', 0, NULL, 1, 0),
+	(407, 1, 156, '2025-12-20', 1, NULL, 1, 1),
+	(408, 1, 157, '2025-12-20', 0, NULL, 1, 0),
+	(409, 1, 40, '2025-12-21', 1, '2025-12-21 22:18:57', 1, 10),
+	(410, 1, 39, '2025-12-21', 1, '2025-12-21 16:56:55', 1, 10),
+	(411, 1, 150, '2025-12-21', 1, '2025-12-21 16:40:35', 1, 20),
+	(412, 1, 149, '2025-12-21', 1, '2025-12-21 16:56:34', 1, 20),
+	(413, 1, 45, '2025-12-21', 1, '2025-12-21 16:56:22', 1, 10),
+	(414, 1, 158, '2025-12-21', 1, '2025-12-21 16:57:08', 1, 1),
+	(415, 1, 6, '2025-12-21', 0, NULL, 1, 0),
+	(416, 1, 49, '2025-12-21', 0, NULL, 1, 0),
+	(417, 1, 59, '2025-12-21', 1, '2025-12-21 22:22:01', 1, 20),
+	(418, 1, 62, '2025-12-21', 1, '2025-12-21 22:22:01', 1, 20),
+	(419, 1, 145, '2025-12-21', 1, '2025-12-21 22:22:01', 1, 10),
+	(420, 1, 159, '2025-12-21', 0, NULL, 1, 0),
+	(421, 1, 160, '2025-12-21', 1, '2025-12-18 22:22:15', 0, 20),
+	(422, 1, 17, '2025-12-21', 0, NULL, 0, 0),
+	(423, 1, 32, '2025-12-21', 1, '2025-12-21 22:25:16', 0, 5),
+	(424, 1, 58, '2025-12-21', 1, '2025-12-21 22:25:16', 0, 10),
+	(425, 1, 133, '2025-12-21', 1, '2025-12-21 22:25:16', 0, 20),
+	(426, 1, 152, '2025-12-21', 1, '2025-12-21 22:25:17', 0, 30),
+	(427, 1, 157, '2025-12-23', 1, '2025-12-23 10:29:07', 0, 1),
+	(428, 1, 28, '2025-12-23', 1, '2025-12-23 10:29:07', 0, 10),
+	(429, 1, 150, '2025-12-23', 1, '2025-12-23 10:29:08', 0, 20),
+	(430, 1, 156, '2025-12-23', 1, '2025-12-23 10:29:08', 0, 1),
+	(431, 1, 18, '2025-12-23', 1, '2025-12-23 10:29:09', 0, 5);
+
+-- Struktúra mentése tábla my_way. user_point_history
+CREATE TABLE IF NOT EXISTS `user_point_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `area` enum('health','learning','money','relationships','me') NOT NULL,
+  `points` int(11) NOT NULL,
+  `created_at` date NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_point_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Tábla adatainak mentése my_way.user_point_history: ~5 rows (hozzávetőleg)
+DELETE FROM `user_point_history`;
+INSERT INTO `user_point_history` (`id`, `user_id`, `area`, `points`, `created_at`) VALUES
+	(1, 1, 'health', 1, '2025-12-23'),
+	(2, 1, 'learning', 10, '2025-12-23'),
+	(3, 1, 'money', 20, '2025-12-23'),
+	(4, 1, 'relationships', 1, '2025-12-23'),
+	(5, 1, 'me', 5, '2025-12-23'),
+	(6, 1, 'health', 1, '2025-12-23'),
+	(7, 1, 'learning', 10, '2025-12-23'),
+	(8, 1, 'relationships', 1, '2025-12-23'),
+	(9, 1, 'money', 20, '2025-12-23'),
+	(10, 1, 'me', 5, '2025-12-23');
 
 -- Struktúra mentése tábla my_way. user_streaks
 CREATE TABLE IF NOT EXISTS `user_streaks` (
@@ -178,6 +240,8 @@ CREATE TABLE IF NOT EXISTS `user_streaks` (
 
 -- Tábla adatainak mentése my_way.user_streaks: ~0 rows (hozzávetőleg)
 DELETE FROM `user_streaks`;
+INSERT INTO `user_streaks` (`user_id`, `current_streak`, `last_completed`) VALUES
+	(1, 1, '2025-12-23');
 
 -- Struktúra mentése tábla my_way. users
 CREATE TABLE IF NOT EXISTS `users` (
@@ -185,14 +249,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `totalPoints` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tábla adatainak mentése my_way.users: ~0 rows (hozzávetőleg)
+-- Tábla adatainak mentése my_way.users: ~1 rows (hozzávetőleg)
 DELETE FROM `users`;
-INSERT INTO `users` (`id`, `email`, `password_hash`, `created_at`) VALUES
-	(1, 'nemeth.csaba.bence@gmail.com', '$2b$10$ESYLENMi7xGrJonBN0SqC.BeceQl0M0Yiq7hLWgTPyBP6SjcWoF6u', '2025-12-20 11:39:18');
+INSERT INTO `users` (`id`, `email`, `password_hash`, `created_at`, `totalPoints`) VALUES
+	(1, 'nemeth.csaba.bence@gmail.com', '$2b$10$ESYLENMi7xGrJonBN0SqC.BeceQl0M0Yiq7hLWgTPyBP6SjcWoF6u', '2025-12-20 11:39:18', 51);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
